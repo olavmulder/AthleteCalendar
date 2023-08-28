@@ -16,6 +16,28 @@ MyAtlets = [
             ["Jolande Brasser", "AV Trias"]
 ]
 
+def UsePupilFilter(browser):
+   pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
+   
+   wait = WebDriverWait(browser, 10)
+   wait.until(EC.visibility_of_element_located((By.ID,"advancedsearchoptions")))
+   dropDown = browser.find_element(By.ID,"advancedsearchoptions")
+   button = dropDown.find_elements(By.TAG_NAME, "button")
+   
+   for b in button:
+      if b.text == "All categories":
+         print("found alle cat:")
+         b.click()
+         wait = WebDriverWait(browser, 10)
+         wait.until(EC.visibility_of_element_located((By.TAG_NAME, "li")))
+         list = dropDown.find_elements(By.TAG_NAME, "li")
+         listNL = list.find_elements(By.CLASS_NAME, "countryspecific country_NL")
+         for l in listNL:
+            for p in pupils:
+               if(l.text == p):
+                  l.click()
+       
+
 def GetEventPage(browser):
    
    try:
@@ -142,6 +164,8 @@ def main():
    indexEvents = 0
    lenEvents = 0
 
+   UsePupilFilter(browser)
+   
    eventPage = GetEventPage(browser)
    eventTables = GetEventTables(browser,eventPage)
    lenEventTables = len(eventTables)
@@ -151,6 +175,8 @@ def main():
    myAtltesCompetingList = [[4]]
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library
+      UsePupilFilter(browser)
+
       eventPage = GetEventPage(browser)
       if(eventPage != None):
          eventTables = GetEventTables(browser, eventPage)
@@ -177,6 +203,7 @@ def main():
          eventPage = None
          eventTables = None
          events = None
+         UsePupilFilter(browser) 
          eventPage   = GetEventPage(browser)
          eventTables = GetEventTables(browser, eventPage)
          events      = GetEventsFromTable(browser, eventTables, eventTablesIndex)
