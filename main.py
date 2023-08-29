@@ -26,7 +26,8 @@ def UsePupilFilter(browser):
    
    for b in button:
       if b.text == "All categories":
-         print("found alle cat:")
+         wait = WebDriverWait(browser, 10)
+         wait.until(EC.element_to_be_clickable(b))
          b.click()
          wait = WebDriverWait(browser, 10)
          wait.until(EC.visibility_of_element_located((By.TAG_NAME, "li")))
@@ -34,25 +35,27 @@ def UsePupilFilter(browser):
          for p in pupils:
             for l in list:
                if l.text == p:
-                  l.click()
-                  break
-   time.sleep(2)        
+                  try:
+                     wait = WebDriverWait(browser, 10)
+                     wait.until(EC.element_to_be_clickable(l))
+                     l.click()
+                     break
+                  except:
+                     print("cant click", l.text)
+                     
+   time.sleep(1)        
                   
 
 def GetEventPage(browser):
-   
-   try:
-      return browser.find_element(By.ID, "events")
-   except:
-      wait = WebDriverWait(browser, 10)
-      wait.until(EC.visibility_of_element_located((By.ID, "events")))
-      return  browser.find_element(By.ID, "events")
-   #return eventPage
+   wait = WebDriverWait(browser, 10)
+   wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "calendarTable")))
+   return  browser.find_element(By.ID, "events")
 
 def GetEventTables(browser, eventPage):
 
+   
    wait = WebDriverWait(browser, 10)
-   wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "table-content")))
+   wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "calendarTable")))
    eventTable =  eventPage.find_elements(By.CLASS_NAME, "table-content")   
    return eventTable
 
@@ -67,18 +70,11 @@ def IsClickable(browser, events, indexEvents):
 
 def GetEventsFromTable(browser, eventTables, eventTablesIndex):
    #first get all nececarry variables
-   try:
-      cal = eventTables[eventTablesIndex].find_element(By.CLASS_NAME, "calendarTable")
-      table = cal.find_element(By.TAG_NAME, "tbody")
-      return table.find_elements(By.TAG_NAME, "tr")
-   except:
-      #if eventTable is missing get it again
-      wait = WebDriverWait(browser, 10)
-      wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "calendarTable")))
-
-      cal = eventTables[eventTablesIndex].find_element(By.CLASS_NAME, "calendarTable")
-      table = cal.find_element(By.TAG_NAME, "tbody")
-      return table.find_elements(By.TAG_NAME, "tr")
+   wait = WebDriverWait(browser, 10)
+   wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "calendarTable")))
+   cal = eventTables[eventTablesIndex].find_element(By.CLASS_NAME, "calendarTable")
+   table = cal.find_element(By.TAG_NAME, "tbody")
+   return table.find_elements(By.TAG_NAME, "tr")
    
 def CheckNoAtletes(event):
    compData = event.find_elements(By.TAG_NAME, "td")
@@ -104,48 +100,62 @@ def GoToCompetitors(browser):
 def FindAtletes(browser, eventName, eventData):
    names = [name[0] for name in MyAtlets]
    clubs = [club[1] for club in MyAtlets]
-   comp = [[]]
+   competitors = []
    list = None
    
    try:
-      browser.find_element(By.ID, "adminAtleten")
-      print("no registrated atletes")
+      wait = WebDriverWait(browser, 10)
+      wait.until(EC.visibility_of_element_located((By.ID, "deelnemers_1")))
+      list = browser.find_element(By.ID, "deelnemers_1")
+     
    except:
       try:
-         wait = WebDriverWait(browser, 10)
-         wait.until(EC.visibility_of_element_located((By.ID, "deelnemers_1")))
-         list = browser.find_element(By.ID, "deelnemers_1")
+         browser.find_element(By.ID, "adminAtleten")
+         print("no registrated atletes")
       except:
          list = None
    
    if(list != None):
       added = False
-      atletes = list.find_elements(By.TAG_NAME, "tr")
-      for index,atlete in enumerate(atletes):
-         if index != 1:
-            coloms = atlete.find_elements(By.TAG_NAME, "td")
-            if len(coloms) >= 3:
-               for index, n in enumerate(names):
-                  #coloms[1] = name, coloms[2] = club
-                  if(coloms[1].text == n):
-                     if(clubs[index] == coloms[2].text):
-                        print("naam: ", coloms[1].text, "; club: ", coloms[2].text)
-                        comp.append([eventData, eventName, coloms[1].text, coloms[2].text])
-                        added = True
+
+      tableHead = list.find_element(By.TAG_NAME, "thead")
+      tableHeadTh = tableHead.find_elements(By.TAG_NAME, "th")
+      clubID = -1
+      NameID = -1
+      for i,headernames in enumerate(tableHeadTh):
+         if headernames.text == "Club":
+            clubID = i
+         if headernames.text == "Name":
+            NameID = i
+      print(f"name id;{NameID}, club id;{clubID}")
+
+      tableBody = list.find_element(By.TAG_NAME, "tbody")
+      tableBodyTr = tableBody.find_elements(By.TAG_NAME, "tr")
+
+      for atlete in tableBodyTr:
+         coloms = atlete.find_elements(By.TAG_NAME, "td")
+         for indexName in range(0, len(names)):
+            #partition because "(out of competition)" after name  
+            if(coloms[NameID].text.partition(" (")[0] == names[indexName] or
+               coloms[NameID].text                   == names[indexName]): 
+               
+               if(coloms[clubID].text == clubs[indexName]):
+                  print("naam: ", coloms[NameID].text, "; club: ", coloms[clubID].text)
+                  competitors.append([ eventData, eventName, names[indexName], clubs[indexName] ])
+                  added = True
       if added:
-         return comp
+         return competitors
       else:
          return False
    else:
-      #print("list of atletes is none")
       return False
 
 def ShowAthletes(athletes):
-   
+   print("show athletes:")
    for at in athletes:
       print(at)
 
-def main():
+def Init():
    opts = Options()
    #opts.headless = True
    #assert opts.headless  # Operating in headless mode
@@ -162,6 +172,10 @@ def main():
          button = None
    # Click the button
    button.click()
+   return browser
+
+def main():
+   browser = Init()
 
 
    eventTablesIndex = 0
@@ -178,39 +192,30 @@ def main():
 
    #for all the tables with events
    print("lenEventTables", lenEventTables)
-   myAtltesCompetingList = [[]]
+   myAtltesCompetingList = []
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library
       UsePupilFilter(browser)
-
+      
       eventPage = GetEventPage(browser)
-      if(eventPage != None):
-         eventTables = GetEventTables(browser, eventPage)
-         if(eventTables != None):
-            events = GetEventsFromTable(browser, eventTables, eventTablesIndex)
-            if(events != None):
-               lenEvents = len(events)
-               print(f"lenEvents: {lenEvents}")
-            else:
-               print("events = None")
-               return -1
-         else:
-            print("eventTables = None")
-            return -1
-      else:
-         print("eventPage = None")
-         return -1
+      eventTables = GetEventTables(browser, eventPage)
+      events = GetEventsFromTable(browser, eventTables, eventTablesIndex)
+      lenEvents = len(events)
+      
       for indexEvents in range (0, lenEvents):
          #reset all variables
-         print(f"indexEvents: {indexEvents}, eventTableIndex: {eventTablesIndex}")
+         #print(f"indexEvents: {indexEvents}, eventTableIndex: {eventTablesIndex}")
          if(browser.current_url != "https://www.atletiek.nu/wedstrijden/"):
             browser.get("https://www.atletiek.nu/wedstrijden/")
+         
+        
+         
          eventPage = None
          eventTables = None
          events = None
          UsePupilFilter(browser) 
          eventPage   = GetEventPage(browser)
-         eventTables = GetEventTables(browser, eventPage)
+         eventTables = GetEventTables(browser, eventPage) 
          events      = GetEventsFromTable(browser, eventTables, eventTablesIndex)
          
          if IsClickable(browser,events, indexEvents) == True:
@@ -239,10 +244,8 @@ def main():
                      listRet = FindAtletes(browser, eventName, eventDate)
                      if(listRet != False):
                         myAtltesCompetingList.append(listRet)
-                     else:
-                        print("my atletes don't compete here")
                      browser.get("https://www.atletiek.nu/wedstrijden/")
-                  else:
+                  '''else:
                      print("no competition button found")
                else:
                   print("no competitors")
@@ -250,14 +253,24 @@ def main():
                print("no eventname")
          else:
             print("not clickable")
-         
-         
-         indexEvents +=1
-      
-      
-      eventTablesIndex += 1
-      indexEvents = 0
+         '''
    ShowAthletes(myAtltesCompetingList)
-
    browser.quit()
+def test():
+   athletes =[]
+   browser = Init()
+   browser.get('https://www.atletiek.nu/wedstrijd/atleten/39444/')
+
+   ret = FindAtletes(browser, "test", "testData")
+   if ret != False:
+      athletes.append(ret)
+   
+   browser.get('https://www.atletiek.nu/wedstrijd/atleten/39703/')
+   
+   ret = FindAtletes(browser, "test", "testData")
+   if ret != False:
+      athletes.append(ret)
+   ShowAthletes(athletes)
+   
+#test()
 main()
