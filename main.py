@@ -13,7 +13,7 @@ total reload every time
 '''
 
 MyAtlets = [
-            ["Jolande Brasser", "AV Trias"]
+            ["Nova Lauret", "AV Hylas"]
 ]
 
 def UsePupilFilter(browser):
@@ -30,13 +30,14 @@ def UsePupilFilter(browser):
          b.click()
          wait = WebDriverWait(browser, 10)
          wait.until(EC.visibility_of_element_located((By.TAG_NAME, "li")))
-         list = dropDown.find_elements(By.TAG_NAME, "li")
-         listNL = list.find_elements(By.CLASS_NAME, "countryspecific country_NL")
-         for l in listNL:
-            for p in pupils:
-               if(l.text == p):
+         list = dropDown.find_elements(By.CLASS_NAME, "country_NL")
+         for p in pupils:
+            for l in list:
+               if l.text == p:
                   l.click()
-       
+                  break
+   time.sleep(2)        
+                  
 
 def GetEventPage(browser):
    
@@ -67,12 +68,17 @@ def IsClickable(browser, events, indexEvents):
 def GetEventsFromTable(browser, eventTables, eventTablesIndex):
    #first get all nececarry variables
    try:
-      return eventTables[eventTablesIndex].find_elements(By.TAG_NAME, "tr")
+      cal = eventTables[eventTablesIndex].find_element(By.CLASS_NAME, "calendarTable")
+      table = cal.find_element(By.TAG_NAME, "tbody")
+      return table.find_elements(By.TAG_NAME, "tr")
    except:
       #if eventTable is missing get it again
       wait = WebDriverWait(browser, 10)
-      wait.until(EC.visibility_of_element_located((By.TAG_NAME, "tr")))
-      return eventTables[eventTablesIndex].find_elements(By.TAG_NAME, "tr")
+      wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "calendarTable")))
+
+      cal = eventTables[eventTablesIndex].find_element(By.CLASS_NAME, "calendarTable")
+      table = cal.find_element(By.TAG_NAME, "tbody")
+      return table.find_elements(By.TAG_NAME, "tr")
    
 def CheckNoAtletes(event):
    compData = event.find_elements(By.TAG_NAME, "td")
@@ -98,7 +104,7 @@ def GoToCompetitors(browser):
 def FindAtletes(browser, eventName, eventData):
    names = [name[0] for name in MyAtlets]
    clubs = [club[1] for club in MyAtlets]
-   comp = [[4]]
+   comp = [[]]
    list = None
    
    try:
@@ -172,7 +178,7 @@ def main():
 
    #for all the tables with events
    print("lenEventTables", lenEventTables)
-   myAtltesCompetingList = [[4]]
+   myAtltesCompetingList = [[]]
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library
       UsePupilFilter(browser)
@@ -194,8 +200,7 @@ def main():
       else:
          print("eventPage = None")
          return -1
-      #need to change to 0
-      for indexEvents in range (15, lenEvents):
+      for indexEvents in range (0, lenEvents):
          #reset all variables
          print(f"indexEvents: {indexEvents}, eventTableIndex: {eventTablesIndex}")
          if(browser.current_url != "https://www.atletiek.nu/wedstrijden/"):
