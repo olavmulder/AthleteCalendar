@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 import logging
+from csvHandling import *
 '''
 keep tracking of indexes:
    1. table
@@ -13,9 +14,7 @@ keep tracking of indexes:
 total reload every time 
 '''
 
-MyAtlets = [
-            ["Nova Lauret", "AV Hylas"]
-]
+MyAthletes = OpenFile('athletes.csv')
 
 def DebugInit():
    logging.basicConfig(filename="main.log", filemode="w", format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
@@ -102,8 +101,8 @@ def GoToCompetitors(browser):
    return False
 
 def FindAtletes(browser, eventName, eventData):
-   names = [name[0] for name in MyAtlets]
-   clubs = [club[1] for club in MyAtlets]
+   names = [name[0] for name in MyAthletes]
+   clubs = [club[1] for club in MyAthletes]
    competitors = []
    list = None
    
@@ -145,7 +144,7 @@ def FindAtletes(browser, eventName, eventData):
                
                if(coloms[clubID].text == clubs[indexName]):
                   print("naam: ", coloms[NameID].text, "; club: ", coloms[clubID].text)
-                  competitors.append([ eventData, eventName, names[indexName], clubs[indexName] ])
+                  competitors.append([eventData, eventName, names[indexName], clubs[indexName] ])
                   added = True
       if added:
          return competitors
@@ -155,9 +154,9 @@ def FindAtletes(browser, eventName, eventData):
       return False
 
 def ShowAthletes(athletes):
-   logging.debug("show athletes:")
+   print("show athletes:")
    for at in athletes:
-      logging.debug(at)
+      print(at)
 
 def Init():
    opts = Options()
@@ -182,7 +181,6 @@ def main():
    DebugInit()
    browser = Init()
 
-
    eventTablesIndex = 0
    lenEventTables = 0 
 
@@ -197,7 +195,7 @@ def main():
 
    #for all the tables with events
    logging.debug("lenEventTables", lenEventTables)
-   myAtltesCompetingList = []
+   myAthletesCompetingList = []
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library
       UsePupilFilter(browser)
@@ -248,7 +246,7 @@ def main():
                      #print("atletes here")
                      listRet = FindAtletes(browser, eventName, eventDate)
                      if(listRet != False):
-                        myAtltesCompetingList.append(listRet)
+                        myAthletesCompetingList.append(listRet)
                      browser.get("https://www.atletiek.nu/wedstrijden/")
                   else:
                      logging.debug("no competition button found")
@@ -259,10 +257,10 @@ def main():
          else:
             logging.debug("not clickable")
          
-   ShowAthletes(myAtltesCompetingList)
+   ShowAthletes(myAthletesCompetingList)
    browser.quit()
 def test():
-   athletes =[]
+   athletes = []
    browser = Init()
    browser.get('https://www.atletiek.nu/wedstrijd/atleten/39444/')
 
@@ -275,7 +273,11 @@ def test():
    ret = FindAtletes(browser, "test", "testData")
    if ret != False:
       athletes.append(ret)
-   ShowAthletes(athletes)
+   
+   #ShowAthletes(athletes)
+   print("athletes: ", athletes)
+   WriteToFile('wedstrijddeelname_overzicht.csv', athletes)
+   browser.quit()
    
 #test()
 main()
