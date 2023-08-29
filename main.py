@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
+import logging
 '''
 keep tracking of indexes:
    1. table
@@ -15,6 +16,9 @@ total reload every time
 MyAtlets = [
             ["Nova Lauret", "AV Hylas"]
 ]
+
+def DebugInit():
+   logging.basicConfig(filename="main.log", filemode="w", format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 def UsePupilFilter(browser):
    pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
@@ -41,7 +45,7 @@ def UsePupilFilter(browser):
                      l.click()
                      break
                   except:
-                     print("cant click", l.text)
+                     logging.debug("cant click", l.text)
                      
    time.sleep(1)        
                   
@@ -65,7 +69,7 @@ def IsClickable(browser, events, indexEvents):
       wait.until(EC.element_to_be_clickable(events[indexEvents]))
       return True
    except:
-      print(f"Element is not clickable.")
+      logging.debug(f"Element is not clickable.")
       return False
 
 def GetEventsFromTable(browser, eventTables, eventTablesIndex):
@@ -111,7 +115,7 @@ def FindAtletes(browser, eventName, eventData):
    except:
       try:
          browser.find_element(By.ID, "adminAtleten")
-         print("no registrated atletes")
+         logging.debug("no registrated atletes")
       except:
          list = None
    
@@ -127,7 +131,7 @@ def FindAtletes(browser, eventName, eventData):
             clubID = i
          if headernames.text == "Name":
             NameID = i
-      print(f"name id;{NameID}, club id;{clubID}")
+      logging.debug(f"name id;{NameID}, club id;{clubID}")
 
       tableBody = list.find_element(By.TAG_NAME, "tbody")
       tableBodyTr = tableBody.find_elements(By.TAG_NAME, "tr")
@@ -151,9 +155,9 @@ def FindAtletes(browser, eventName, eventData):
       return False
 
 def ShowAthletes(athletes):
-   print("show athletes:")
+   logging.debug("show athletes:")
    for at in athletes:
-      print(at)
+      logging.debug(at)
 
 def Init():
    opts = Options()
@@ -175,6 +179,7 @@ def Init():
    return browser
 
 def main():
+   DebugInit()
    browser = Init()
 
 
@@ -191,7 +196,7 @@ def main():
    lenEventTables = len(eventTables)
 
    #for all the tables with events
-   print("lenEventTables", lenEventTables)
+   logging.debug("lenEventTables", lenEventTables)
    myAtltesCompetingList = []
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library
@@ -245,15 +250,15 @@ def main():
                      if(listRet != False):
                         myAtltesCompetingList.append(listRet)
                      browser.get("https://www.atletiek.nu/wedstrijden/")
-                  '''else:
-                     print("no competition button found")
+                  else:
+                     logging.debug("no competition button found")
                else:
-                  print("no competitors")
+                  logging.debug("no competitors")
             else:
-               print("no eventname")
+               logging.debug("no eventname")
          else:
-            print("not clickable")
-         '''
+            logging.debug("not clickable")
+         
    ShowAthletes(myAtltesCompetingList)
    browser.quit()
 def test():
