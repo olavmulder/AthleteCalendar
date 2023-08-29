@@ -14,10 +14,11 @@ keep tracking of indexes:
 total reload every time 
 '''
 
-MyAthletes = OpenFile('athletes.csv')
+#MyAthletes = OpenFile('athletes.csv')
+clubName = "AV Hylas"
 
 def DebugInit():
-   logging.basicConfig(filename="main.log", filemode="w", format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+   logging.basicConfig(filename="main.log", filemode="w", format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 def UsePupilFilter(browser):
    pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
@@ -44,7 +45,7 @@ def UsePupilFilter(browser):
                      l.click()
                      break
                   except:
-                     logging.debug("cant click", l.text)
+                     logging.debug("cant click")
                      
    time.sleep(1)        
                   
@@ -101,8 +102,8 @@ def GoToCompetitors(browser):
    return False
 
 def FindAtletes(browser, eventName, eventData):
-   names = [name[0] for name in MyAthletes]
-   clubs = [club[1] for club in MyAthletes]
+   #names = [name[0] for name in MyAthletes]
+   #clubs = [club[1] for club in MyAthletes]
    competitors = []
    list = None
    
@@ -137,15 +138,13 @@ def FindAtletes(browser, eventName, eventData):
 
       for atlete in tableBodyTr:
          coloms = atlete.find_elements(By.TAG_NAME, "td")
-         for indexName in range(0, len(names)):
-            #partition because "(out of competition)" after name  
-            if(coloms[NameID].text.partition(" (")[0] == names[indexName] or
-               coloms[NameID].text                   == names[indexName]): 
-               
-               if(coloms[clubID].text == clubs[indexName]):
-                  print("naam: ", coloms[NameID].text, "; club: ", coloms[clubID].text)
-                  competitors.append([eventData, eventName, names[indexName], clubs[indexName] ])
-                  added = True
+         #partition because "(out of competition)" after name  
+         #if(coloms[NameID].text.partition(" (")[0] == names[indexName] or
+         #   coloms[NameID].text                   == names[indexName]): 
+         if(coloms[clubID].text == clubName):
+            print("naam: ", coloms[NameID].text, "; club: ", coloms[clubID].text)
+            competitors.append([eventData, eventName, coloms[NameID].text])
+            added = True
       if added:
          return competitors
       else:
@@ -160,8 +159,8 @@ def ShowAthletes(athletes):
 
 def Init():
    opts = Options()
-   #opts.headless = True
-   #assert opts.headless  # Operating in headless mode
+   opts.headless = True
+   assert opts.headless  # Operating in headless mode
    browser = Firefox(options=opts)
    browser.get('https://www.atletiek.nu/wedstrijden')
 
@@ -194,7 +193,7 @@ def main():
    lenEventTables = len(eventTables)
 
    #for all the tables with events
-   logging.debug("lenEventTables", lenEventTables)
+   logging.debug(f"lenEventTables: {lenEventTables}")
    myAthletesCompetingList = []
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library
@@ -210,8 +209,6 @@ def main():
          #print(f"indexEvents: {indexEvents}, eventTableIndex: {eventTablesIndex}")
          if(browser.current_url != "https://www.atletiek.nu/wedstrijden/"):
             browser.get("https://www.atletiek.nu/wedstrijden/")
-         
-        
          
          eventPage = None
          eventTables = None
@@ -256,9 +253,16 @@ def main():
                logging.debug("no eventname")
          else:
             logging.debug("not clickable")
-         
-   ShowAthletes(myAthletesCompetingList)
+   try:      
+      ShowAthletes(myAthletesCompetingList)
+      WriteToFile('wedstrijddeelname_overzicht.csv', myAthletesCompetingList )
+      logging.info("saved, done, return 0")
+   except:
+      logging.info(f"saving went from, data was: {myAthletesCompetingList}")
    browser.quit()
+   return 0
+
+
 def test():
    athletes = []
    browser = Init()
