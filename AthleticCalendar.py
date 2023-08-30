@@ -37,11 +37,20 @@ def PageLooping(browser, url):
                continue
             while(UsePupilFilter(browser) != 0):
                continue
-            
+
             eventPage = GetEventPage(browser)
          eventTables = GetEventTables(browser, eventPage[0])
+         if(eventTables == -1):
+            eventPage = -1
       lenEventTables = len(eventTables)
       events = GetEventsFromTable(browser, eventTables, eventTablesIndex)
+      if(events == -2):
+         eventTables = -1
+         eventPage = -1
+         #if eventTables is smaller than index reset everything
+         if(lenEventTables <= eventTablesIndex):
+            eventTablesIndex = 0
+            eventsIndex = 0
    lenEvents = len(events)
    return events
 
