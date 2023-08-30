@@ -116,6 +116,7 @@ def GetEventsFromTable(browser, eventTables, eventTablesIndex):
       if(len(table) > 0):
          events = table[0].find_elements(By.TAG_NAME, "tr")
          if(len(events) > 0):
+            logging.warning("successfull got events")
             return events
          else:
             logging.warning("no events in table")
