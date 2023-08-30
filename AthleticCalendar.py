@@ -1,5 +1,6 @@
 from pageHandling import*
 from csvHandling import *
+import sys
 '''
 keep tracking of indexes:
    1. table
@@ -7,9 +8,8 @@ keep tracking of indexes:
 total reload every time 
 '''
 
-#MyAthletes = OpenFile('athletes.csv')
-clubName = "AV Hylas"
-categoryList  =["U12", "U11", "U10", "U9", "U8"]
+clubName = ""
+categoryList  =[]
 #global variables
 events = -2
  
@@ -37,10 +37,20 @@ def PageLooping(browser, url):
                continue
             while(UsePupilFilter(browser) != 0):
                continue
+
             eventPage = GetEventPage(browser)
          eventTables = GetEventTables(browser, eventPage[0])
+         if(eventTables == -1):
+            eventPage = -1
       lenEventTables = len(eventTables)
       events = GetEventsFromTable(browser, eventTables, eventTablesIndex)
+      if(events == -2):
+         eventTables = -1
+         eventPage = -1
+         #if eventTables is smaller than index reset everything
+         if(lenEventTables <= eventTablesIndex):
+            eventTablesIndex = 0
+            eventsIndex = 0
    lenEvents = len(events)
    return events
 
@@ -179,8 +189,15 @@ def GetEventData(browser):
       logging.error(f"no event name or event data at eventIndex {eventsIndex}")
    return eventnaam,eventdatumCol
 if __name__ == '__main__':
-   
-
+   if len(sys.argv) < 4:
+      print("not enough arguments")
+      exit(-1)
+   clubName = sys.argv[1]
+   print(len(sys.argv))
+   for i in range (2,len(sys.argv)):
+      categoryList.append(sys.argv[i])
+   print(f"club name is: {clubName}")
+   print(f"category list: {categoryList}")
    logging.basicConfig(filename='main.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
    browser = Init()
    url = 'https://www.atletiek.nu/wedstrijden/'

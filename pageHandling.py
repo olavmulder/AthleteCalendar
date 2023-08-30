@@ -109,7 +109,10 @@ def GetEventsFromTable(browser, eventTables, eventTablesIndex):
       WebDriverWait(browser, timeout).until(element_present)
    except:
       logging.error("can't get calendarTable")
-      return -1
+      return -2
+   if(len(eventTables)-1 < eventTablesIndex):
+      logging.error(f"len eventtables is smaller than index; {len(eventTables)-1}; {eventTablesIndex}")
+      return -2
    cal = eventTables[eventTablesIndex].find_elements(By.CLASS_NAME, "calendarTable")
    if len(cal) > 0:
       table = cal[0].find_elements(By.TAG_NAME, "tbody")
