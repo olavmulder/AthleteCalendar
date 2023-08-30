@@ -9,8 +9,8 @@ import logging
 timeout = 10
 
 def Reload(browser, url):
-   browser.get(url)
    try:
+      browser.get(url)
       element_present = EC.presence_of_element_located((By.ID,"advancedsearchoptions"))
       WebDriverWait(browser, timeout).until(element_present)
    except:
