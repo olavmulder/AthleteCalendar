@@ -1,6 +1,5 @@
 import AtleticCalendar as AC
-
-
+import csvHandling 
 def test_reload():
    print("test reload")
    url = "https://www.atletiek.nu/wedstrijden/"
@@ -97,7 +96,8 @@ def test_find_atletes():
       array.append(res)
       AC.WriteToFile('temp.csv', array)
      
-
+def test_csv():
+   csvHandling.RemoveDoubleEvent("wedstrijddeelname_overzicht.csv")
       
 def test_main():
 
@@ -107,7 +107,8 @@ def test_main():
    #test_eventpage()
    #test_get_events()
    #test_clickable()
-   test_find_atletes()
+   #test_find_atletes()
+   test_csv()
 if __name__ == '__main__':
    AC.logging.basicConfig(filename='main.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=AC.logging.WARNING)
    test_main()

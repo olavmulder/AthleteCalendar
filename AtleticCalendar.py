@@ -231,7 +231,7 @@ if __name__ == '__main__':
    try:      
       ShowAthletes(myAthletesCompetingList)
       WriteToFile('wedstrijddeelname_overzicht.csv', myAthletesCompetingList )
-      logging.info("saved, done, return 0")
+      logging.info("saved, done")
    except:
       logging.info(f"saving went from, data was: {myAthletesCompetingList}")
    browser.quit()
