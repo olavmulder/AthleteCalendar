@@ -212,7 +212,7 @@ if __name__ == '__main__':
    time.sleep(2)
    events = PageLooping(browser, url)   
    lenEvents =  len(events)
-
+   iters = 0
    #for all the tables with events
    logging.error(f"after: lenEventTables: {lenEventTables}")
    logging.error(f"lenEvents: {lenEvents}")
@@ -220,7 +220,8 @@ if __name__ == '__main__':
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library     
       for eventsIndex in range (0, lenEvents):
-         
+         print(iters)
+         iters+=1
          events = PageLooping(browser, url)
          
          if IsClickable(browser,events, eventsIndex) == True:
@@ -259,7 +260,7 @@ if __name__ == '__main__':
    try:      
       ShowAthletes(myAthletesCompetingList)
       WriteToFile('wedstrijddeelname_overzicht.csv', myAthletesCompetingList )
-      logging.info("saved, done")
+      logging.warning("saved, done")
    except:
-      logging.info(f"saving went from, data was: {myAthletesCompetingList}")
+      logging.error(f"saving went from, data was: {myAthletesCompetingList}")
    browser.quit()

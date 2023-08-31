@@ -68,7 +68,7 @@ def UsePupilFilter(browser):
                   
                   break
    #print('successful executed UsePupilFilter')
-   logging.warning('successful executed UsePupilFilter')
+   logging.debug('successful executed UsePupilFilter')
    return 0                         
                   
 
@@ -81,7 +81,7 @@ def GetEventPage(browser):
       return -1
    eventPage = browser.find_elements(By.ID, "events")
    if len(eventPage) > 0:
-      logging.warning("successful got event page")
+      logging.debug("successful got event page")
       return  eventPage
    else:
       logging.error("didn't get event page")
@@ -98,7 +98,7 @@ def GetEventTables(browser, eventPage):
    
    eventTable =  eventPage.find_elements(By.CLASS_NAME, "table-content")
    if len(eventTable) > 0:
-      logging.warning('successfull got eventTable')
+      logging.debug('successfull got eventTable')
       return eventTable
    else:
       logging.error("can't get event-table")
@@ -121,7 +121,7 @@ def GetEventsFromTable(browser, eventTables, eventTablesIndex):
       if(len(table) > 0):
          events = table[0].find_elements(By.TAG_NAME, "tr")
          if(len(events) > 0):
-            logging.warning("successfull got events")
+            logging.debug("successfull got events")
             return events
          else:
             logging.warning("no events in table")
