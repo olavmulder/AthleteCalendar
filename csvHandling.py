@@ -1,15 +1,5 @@
 import csv
 from datetime import datetime, timedelta
-'''
-open file and return array with all my athletes
-'''
-def OpenFile(fileName):
-   atletes =[]
-   with open(fileName, newline='') as csvFile:
-      reader = csv.DictReader(csvFile)
-      for row in reader:
-         atletes.append([row['naam'], "AV Hylas"])
-   return atletes
 
 def IsDateNextDate(dateLast, dateNow):
    if(dateNow-timedelta(days=1) == dateLast):
@@ -17,18 +7,18 @@ def IsDateNextDate(dateLast, dateNow):
    return False
 
 
-def RemoveRow(fileName, array):
+def RemoveRows(fileName, array):
+   filterRows = []
    with open(fileName, "r", newline="") as file:
-      csvReader = csv.reader(file)
-      rows = list(csvReader)
-      for i in array:
-         if i < len(rows):
-            print("remove", i)
-            rows.pop(i)
-            
+      csvReader = csv.DictReader(file)
+      for rowNum, row in enumerate(csvReader, start = 1):
+         if rowNum not in array:
+            filterRows.append(row)
    with open(fileName, "w", newline="") as file:
-      csv_writer = csv.writer(file)
-      csv_writer.writerows(rows)
+      fieldNames = ['Datum', 'Wedstrijd', 'Naam', 'Categorie']
+      csvWriter = csv.DictWriter(file, fieldnames=fieldNames)
+      csvWriter.writeheader()
+      csvWriter.writerows(filterRows)
 
 def DetectDoubleEvent(fileName):
    dateInputFormat = "%a %d %b %Y"
@@ -68,7 +58,7 @@ def RemoveDoubleEvent(fileName):
 
    array = DetectDoubleEvent(fileName)
    print("array to delete: ", array)
-   RemoveRow(fileName, array)
+   RemoveRows(fileName, array)
 
 def WriteToFile(fileName, array):
    '''array[0] date
