@@ -11,7 +11,7 @@ def RemoveRows(fileName, array):
    filterRows = []
    with open(fileName, "r", newline="") as file:
       csvReader = csv.DictReader(file)
-      for rowNum, row in enumerate(csvReader, start = 0):
+      for rowNum, row in enumerate(csvReader, start = 2):
          if rowNum not in array:
             filterRows.append(row)
    with open(fileName, "w", newline="") as file:
@@ -58,7 +58,7 @@ def RemoveDoubleEvent(fileName):
 
    array = DetectDoubleEvent(fileName)
    print("array to delete: ", array)
-   RemoveRows("filterd.csv", array)
+   RemoveRows(fileName, array)
 
 def WriteToFile(fileName, array):
    '''array[0] date
