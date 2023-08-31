@@ -57,7 +57,8 @@ def UseFilter(browser, catList):
          list = dropDown.find_elements(By.CLASS_NAME, "country_NL")
          for c in catList:
             for l in list:
-               if l.text == c:
+               if l.text == c or \
+                  l.text.partition(" ")[0] == c:
                   try:
                      element_present = (EC.element_to_be_clickable(l))
                      WebDriverWait(browser, timeout).until(element_present)
