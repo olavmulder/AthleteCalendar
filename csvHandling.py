@@ -23,7 +23,9 @@ def RemoveRow(fileName, array):
       rows = list(csvReader)
       for i in array:
          if i < len(rows):
+            print("remove", i)
             rows.pop(i)
+            
    with open(fileName, "w", newline="") as file:
       csv_writer = csv.writer(file)
       csv_writer.writerows(rows)
@@ -39,8 +41,8 @@ def DetectDoubleEvent(fileName):
       rNum = 0
       for rNum,row in enumerate(reader, start=1):
          #print(f"row: {row}")
-         dateNow = datetime.strptime(row['datum'], dateInputFormat)
-         eventName = row['wedstrijd naam']
+         dateNow = datetime.strptime(row['Datum'], dateInputFormat)
+         eventName = row['Wedstrijd']
          if delete:
             if(dateNow == lastDate and
                eventName == lastEventName):
@@ -51,7 +53,7 @@ def DetectDoubleEvent(fileName):
          else:
             if(IsDateNextDate(lastDate, dateNow) and
                eventName == lastEventName):
-               print(f"{row['wedstrijd naam']} was also yesterday")
+               print(f"{row['Wedstrijd']} was also yesterday")
                delete = True
          lastDate = dateNow
          lastEventName = eventName
@@ -75,7 +77,7 @@ def WriteToFile(fileName, array):
       array[3] club of competitor
    '''
    with open(fileName, 'w', newline='') as csvFile:
-      fieldNames = ['Datum', 'Wedstrijd naam', 'Naam', 'Categorie']
+      fieldNames = ['Datum', 'Wedstrijd', 'Naam', 'Categorie']
       writer = csv.DictWriter(csvFile, fieldnames=fieldNames)
       writer.writeheader()
       print(f"len array is {len(array)}")

@@ -35,7 +35,7 @@ def PageLooping(browser, url):
          while (eventPage == -1):
             while(Reload(browser, url) != 0):
                continue
-            while(UsePupilFilter(browser) != 0):
+            while(UseCategoryFilter(browser, categoryList) != 0):
                continue
 
             eventPage = GetEventPage(browser)
@@ -189,15 +189,22 @@ def GetEventData(browser):
       logging.error(f"no event name or event data at eventIndex {eventsIndex}")
    return eventnaam,eventdatumCol
 if __name__ == '__main__':
+   #get arguments
+   if(sys.argv[1] == '-d'):
+      RemoveDoubleEvent("wedstrijddeelname_overzicht.csv")
+      exit(0)
    if len(sys.argv) < 4:
-      print("not enough arguments")
+      print("not enough arguments; argument 1 = 'club name', \
+            argument 2 = 'catogeory list")
+      print("exaple: python3 AthleticCalendar.py 'AV Hylas' U12 U11 U10 U9")
       exit(-1)
+  
    clubName = sys.argv[1]
-   print(len(sys.argv))
    for i in range (2,len(sys.argv)):
       categoryList.append(sys.argv[i])
    print(f"club name is: {clubName}")
    print(f"category list: {categoryList}")
+   
    logging.basicConfig(filename='main.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
    browser = Init()
    url = 'https://www.atletiek.nu/wedstrijden/'
@@ -246,9 +253,9 @@ if __name__ == '__main__':
          else:
             logging.error(f"eventIndex: {eventsIndex} is not clickable")
    try:      
-      ShowAthletes(myAthletesCompetingList)
+      #ShowAthletes(myAthletesCompetingList)
       WriteToFile('wedstrijddeelname_overzicht.csv', myAthletesCompetingList )
-      logging.info("saved, done")
+      logging.warning("saved, done")
    except:
-      logging.info(f"saving went from, data was: {myAthletesCompetingList}")
+      logging.error(f"saving went from, data was: {myAthletesCompetingList}")
    browser.quit()

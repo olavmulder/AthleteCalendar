@@ -18,8 +18,8 @@ def Reload(browser, url):
       return -1
    return 0
 
-def UsePupilFilter(browser):
-   pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
+def UseCategoryFilter(browser, categoryList):
+   #pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
    try:
       element_present = EC.presence_of_element_located((By.ID,"advancedsearchoptions"))
       WebDriverWait(browser, timeout).until(element_present)
@@ -54,9 +54,10 @@ def UsePupilFilter(browser):
             return -1
          
          list = dropDown.find_elements(By.CLASS_NAME, "country_NL")
-         for p in pupils:
-            for l in list:
-               if l.text == p:
+         for l in list:
+            for cat in categoryList:
+               if l.text == cat or \
+                  l.text.partition(" ")[0] == cat:
                   try:
                      element_present = (EC.element_to_be_clickable(l))
                      WebDriverWait(browser, timeout).until(element_present)
