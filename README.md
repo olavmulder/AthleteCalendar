@@ -10,6 +10,4 @@ v1.1: Actually filtering the events on argument input
 <br>
 ----
 <br>
-v0.1: able to iterate through all competition with selenium <br>
-Coming up:  <br>
-- ?Export to google driver?
+
