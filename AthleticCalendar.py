@@ -36,7 +36,7 @@ def PageLooping(browser, url):
          while (eventPage == -1):
             while(Reload(browser, url) != 0):
                continue
-            while(UsePupilFilter(browser) != 0):
+            while(UseFilter(browser, categoryList) != 0):
                continue
 
             eventPage = GetEventPage(browser)
