@@ -1,6 +1,7 @@
 from pageHandling import*
 from csvHandling import *
 import sys
+import time
 '''
 keep tracking of indexes:
    1. table
@@ -201,9 +202,19 @@ if __name__ == '__main__':
    logging.basicConfig(filename='main.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
    browser = Init()
    url = 'https://www.atletiek.nu/wedstrijden/'
-   PageLooping(browser, url)   
+   
    #for all the tables with events
-   logging.error(f"lenEventTables: {lenEventTables}")
+   logging.error(f"before: lenEventTables: {lenEventTables}")
+   logging.error(f"lenEvents: {lenEvents}")
+
+   events = PageLooping(browser, url)   
+   lenEvents =  len(events)
+   time.sleep(2)
+   events = PageLooping(browser, url)   
+   lenEvents =  len(events)
+
+   #for all the tables with events
+   logging.error(f"after: lenEventTables: {lenEventTables}")
    logging.error(f"lenEvents: {lenEvents}")
    myAthletesCompetingList = []
    for eventTablesIndex in range(0, lenEventTables):
