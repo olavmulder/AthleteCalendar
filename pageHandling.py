@@ -42,10 +42,10 @@ def UseCategoryFilter(browser, categoryList):
          try:
             element_present = (EC.element_to_be_clickable(b))
             WebDriverWait(browser, timeout).until(element_present)
+            b.click()
          except:
             logging.error('Timed out while waiting for page to click on all categories')
             return -1
-         b.click()
          try:
             element_present = (EC.visibility_of_element_located((By.TAG_NAME, "li")))
             WebDriverWait(browser, timeout).until(element_present)
@@ -61,10 +61,10 @@ def UseCategoryFilter(browser, categoryList):
                   try:
                      element_present = (EC.element_to_be_clickable(l))
                      WebDriverWait(browser, timeout).until(element_present)
+                     l.click()
                   except:
                      logging.error(f'cant click on {l.text}')
                      return -1
-                  l.click()
                   break
    #print('successful executed UsePupilFilter')
    logging.warning('successful executed UsePupilFilter')
