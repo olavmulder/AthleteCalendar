@@ -252,9 +252,9 @@ if __name__ == '__main__':
                   else:
                      logging.error("no competition button found")
                else:
-                  logging.error("no competitors")
+                  logging.warning("no competitors")
             else:
-               logging.error("no eventname")
+               logging.warning("no eventname")
          else:
             logging.error(f"eventIndex: {eventsIndex} is not clickable")
    try:      
