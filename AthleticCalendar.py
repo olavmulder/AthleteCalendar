@@ -188,21 +188,20 @@ def GetEventData(browser):
       eventdatumCol = None
       logging.error(f"no event name or event data at eventIndex {eventsIndex}")
    return eventnaam,eventdatumCol
-if __name__ == '__main__':
-   #get arguments
-   if(sys.argv[1] == '-d'):
-      RemoveDoubleEvent("wedstrijddeelname_overzicht.csv")
-      exit(0)
+if __name__ == '__main__':  
    if len(sys.argv) < 4:
       print("not enough arguments; argument 1 = 'club name', \
-            argument 2 = 'catogeory list")
-      print("exaple: python3 AthleticCalendar.py 'AV Hylas' U12 U11 U10 U9")
+            argument 2 = 'file name'.csv (should exist) \
+            argument 3 = 'catogeory list")
+      print("exaple: python3 AthleticCalendar.py 'AV Hylas' pupillen.csv U12 U11 U10 U9")
       exit(-1)
   
    clubName = sys.argv[1]
-   for i in range (2,len(sys.argv)):
+   fileName = sys.argv[2]
+   for i in range (3,len(sys.argv)):
       categoryList.append(sys.argv[i])
    print(f"club name is: {clubName}")
+   print(f"file name is: {fileName}")
    print(f"category list: {categoryList}")
    
    logging.basicConfig(filename='main.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
@@ -254,7 +253,7 @@ if __name__ == '__main__':
             logging.error(f"eventIndex: {eventsIndex} is not clickable")
    try:      
       #ShowAthletes(myAthletesCompetingList)
-      WriteToFile('wedstrijddeelname_overzicht.csv', myAthletesCompetingList )
+      WriteToFile(fileName, myAthletesCompetingList )
       logging.warning("saved, done")
    except:
       logging.error(f"saving went from, data was: {myAthletesCompetingList}")
