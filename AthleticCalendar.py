@@ -34,11 +34,9 @@ def PageLooping(browser, url):
    while (events == -2): #-2 == no events
       while(eventTables == -1):
          while (eventPage == -1):
-            while(Reload(browser, url) != 0):
-               continue
+            browser = Reload(browser, url)
             while(UseFilter(browser, categoryList) != 0):
                continue
-
             eventPage = GetEventPage(browser)
          eventTables = GetEventTables(browser, eventPage[0])
          if(eventTables == -1):

@@ -5,18 +5,21 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import logging
-
+import time
+from AthleticCalendar import Init
 timeout = 10
 
 def Reload(browser, url):
    try:
       browser.get(url)
-      element_present = EC.presence_of_element_located((By.ID,"advancedsearchoptions"))
+      element_present = EC.presence_of_element_located((By.CLASS_NAME,"table-content"))
       WebDriverWait(browser, timeout).until(element_present)
    except:
-      logging.error('Timed out while waiting for page to load')
-      return -1
-   return 0
+      logging.error(f'Timed out while waiting for page to load reload: {url}')
+      browser = Init()
+      browser.get(url)
+      
+   return browser
 
 def UseFilter(browser, catList):
    #pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
