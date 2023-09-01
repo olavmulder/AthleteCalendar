@@ -132,6 +132,8 @@ def FindAtletes(browser, eventName, eventData):
 
       tableBody = list.find_element(By.TAG_NAME, "tbody")
       tableBodyTr = tableBody.find_elements(By.TAG_NAME, "tr")
+     
+      link = browser.current_url
 
       for atlete in tableBodyTr:
          coloms = atlete.find_elements(By.TAG_NAME, "td")
@@ -142,7 +144,7 @@ def FindAtletes(browser, eventName, eventData):
             for c in categoryList:
                if(coloms[catID].text.partition(" ")[0] == c):
                   print("naam: ", coloms[nameID].text, "; cat: ", coloms[catID].text)
-                  competitors.append([eventData, eventName, coloms[nameID].text, coloms[catID].text])
+                  competitors.append([eventData, eventName, coloms[nameID].text, coloms[catID].text, link])
                   added = True
       if added:
          return competitors

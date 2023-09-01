@@ -1,4 +1,4 @@
-import AtleticCalendar as AC
+import AthleticCalendar as AC
 import csvHandling 
 def test_reload():
    print("test reload")
