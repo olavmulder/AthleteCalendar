@@ -8,4 +8,7 @@ v1.0: release version 1.0, can be buggy when filtering and the 'today' table is 
 <p>
 Todo:
 -actually filtering categories
+-fix filter bug, only select selected
+-export to given filename
+-fix bug for duplicated event days
 
