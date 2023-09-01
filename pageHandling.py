@@ -5,20 +5,23 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import logging
-
+import time
+from AthleticCalendar import Init
 timeout = 10
 
 def Reload(browser, url):
    try:
       browser.get(url)
-      element_present = EC.presence_of_element_located((By.ID,"advancedsearchoptions"))
+      element_present = EC.presence_of_element_located((By.CLASS_NAME,"table-content"))
       WebDriverWait(browser, timeout).until(element_present)
    except:
-      logging.error('Timed out while waiting for page to load')
-      return -1
-   return 0
+      logging.error(f'Timed out while waiting for page to load reload: {url}')
+      browser = Init()
+      browser.get(url)
+      
+   return browser
 
-def UseCategoryFilter(browser, categoryList):
+def UseFilter(browser, catList):
    #pupils = ["U12 Mannen", "U12 Vrouwen", "U10 Mannen", "U10 Vrouwen", "U9 Mannen", "U9 Vrouwen"]
    try:
       element_present = EC.presence_of_element_located((By.ID,"advancedsearchoptions"))
@@ -46,6 +49,10 @@ def UseCategoryFilter(browser, categoryList):
          except:
             logging.error('Timed out while waiting for page to click on all categories')
             return -1
+<<<<<<< HEAD
+=======
+         
+>>>>>>> release/v1.0
          try:
             element_present = (EC.visibility_of_element_located((By.TAG_NAME, "li")))
             WebDriverWait(browser, timeout).until(element_present)
@@ -54,10 +61,17 @@ def UseCategoryFilter(browser, categoryList):
             return -1
          
          list = dropDown.find_elements(By.CLASS_NAME, "country_NL")
+<<<<<<< HEAD
          for l in list:
             for cat in categoryList:
                if l.text == cat or \
                   l.text.partition(" ")[0] == cat:
+=======
+         for c in catList:
+            for l in list:
+               if l.text == c or \
+                  l.text.partition(" ")[0] == c:
+>>>>>>> release/v1.0
                   try:
                      element_present = (EC.element_to_be_clickable(l))
                      WebDriverWait(browser, timeout).until(element_present)
@@ -65,9 +79,13 @@ def UseCategoryFilter(browser, categoryList):
                   except:
                      logging.error(f'cant click on {l.text}')
                      return -1
+<<<<<<< HEAD
+=======
+                  
+>>>>>>> release/v1.0
                   break
    #print('successful executed UsePupilFilter')
-   logging.warning('successful executed UsePupilFilter')
+   logging.debug('successful executed UsePupilFilter')
    return 0                         
                   
 
@@ -80,7 +98,7 @@ def GetEventPage(browser):
       return -1
    eventPage = browser.find_elements(By.ID, "events")
    if len(eventPage) > 0:
-      logging.warning("successful got event page")
+      logging.debug("successful got event page")
       return  eventPage
    else:
       logging.error("didn't get event page")
@@ -97,7 +115,7 @@ def GetEventTables(browser, eventPage):
    
    eventTable =  eventPage.find_elements(By.CLASS_NAME, "table-content")
    if len(eventTable) > 0:
-      logging.warning('successfull got eventTable')
+      logging.debug('successfull got eventTable')
       return eventTable
    else:
       logging.error("can't get event-table")
@@ -120,7 +138,7 @@ def GetEventsFromTable(browser, eventTables, eventTablesIndex):
       if(len(table) > 0):
          events = table[0].find_elements(By.TAG_NAME, "tr")
          if(len(events) > 0):
-            logging.warning("successfull got events")
+            logging.debug("successfull got events")
             return events
          else:
             logging.warning("no events in table")

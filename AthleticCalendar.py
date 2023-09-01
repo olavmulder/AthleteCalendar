@@ -1,6 +1,7 @@
 from pageHandling import*
 from csvHandling import *
 import sys
+import time
 '''
 keep tracking of indexes:
    1. table
@@ -33,11 +34,9 @@ def PageLooping(browser, url):
    while (events == -2): #-2 == no events
       while(eventTables == -1):
          while (eventPage == -1):
-            while(Reload(browser, url) != 0):
+            browser = Reload(browser, url)
+            while(UseFilter(browser, categoryList) != 0):
                continue
-            while(UseCategoryFilter(browser, categoryList) != 0):
-               continue
-
             eventPage = GetEventPage(browser)
          eventTables = GetEventTables(browser, eventPage[0])
          if(eventTables == -1):
@@ -131,6 +130,8 @@ def FindAtletes(browser, eventName, eventData):
 
       tableBody = list.find_element(By.TAG_NAME, "tbody")
       tableBodyTr = tableBody.find_elements(By.TAG_NAME, "tr")
+     
+      link = browser.current_url
 
       for atlete in tableBodyTr:
          coloms = atlete.find_elements(By.TAG_NAME, "td")
@@ -141,7 +142,7 @@ def FindAtletes(browser, eventName, eventData):
             for c in categoryList:
                if(coloms[catID].text.partition(" ")[0] == c):
                   print("naam: ", coloms[nameID].text, "; cat: ", coloms[catID].text)
-                  competitors.append([eventData, eventName, coloms[nameID].text, coloms[catID].text])
+                  competitors.append([eventData, eventName, coloms[nameID].text, coloms[catID].text, link])
                   added = True
       if added:
          return competitors
@@ -188,34 +189,55 @@ def GetEventData(browser):
       eventdatumCol = None
       logging.error(f"no event name or event data at eventIndex {eventsIndex}")
    return eventnaam,eventdatumCol
-if __name__ == '__main__':  
+if __name__ == '__main__':
+   catList = ["Masters", "Senioren", "U20", "U18", "U16", "U14" ,"U12", "U11", "U10", "U9"]
    if len(sys.argv) < 4:
-      print("not enough arguments; argument 1 = 'club name', \
-            argument 2 = 'file name'.csv (should exist) \
-            argument 3 = 'catogeory list")
-      print("exaple: python3 AthleticCalendar.py 'AV Hylas' pupillen.csv U12 U11 U10 U9")
+      print("not enough arguments")
       exit(-1)
-  
    clubName = sys.argv[1]
+   try:
+      if(sys.argv[2].partition(".")[2] != "csv"):
+         print(f"{sys.argv[2]} is not a csv file")
+         exit(-1)
+   except:
+      print(f"{sys.argv[2]} is not a csv file")
+      exit(-1)
    fileName = sys.argv[2]
+
    for i in range (3,len(sys.argv)):
-      categoryList.append(sys.argv[i])
+      if sys.argv[i] in catList:
+         categoryList.append(sys.argv[i])
+      else:
+         print(f"{sys.argv[i]} is not a valid category, these are: {catList}")
+         exit(-1)
    print(f"club name is: {clubName}")
-   print(f"file name is: {fileName}")
+   print(f"file name is: {fileName} ")
    print(f"category list: {categoryList}")
-   
    logging.basicConfig(filename='main.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.WARNING)
+   
    browser = Init()
    url = 'https://www.atletiek.nu/wedstrijden/'
-   PageLooping(browser, url)   
+   
    #for all the tables with events
-   logging.error(f"lenEventTables: {lenEventTables}")
-   logging.error(f"lenEvents: {lenEvents}")
+   logging.error(f"before: lenEventTables: {lenEventTables}")
+   logging.error(f"before: lenEvents: {lenEvents}")
+
+   events = PageLooping(browser, url)   
+   lenEvents =  len(events)
+   time.sleep(2)
+   events = PageLooping(browser, url)   
+   lenEvents =  len(events)
+   iters = 0
+   #for all the tables with events
+   logging.error(f"after: lenEventTables: {lenEventTables}")
+   logging.error(f"after: lenEvents: {lenEvents}")
    myAthletesCompetingList = []
+   
    for eventTablesIndex in range(0, lenEventTables):
       #reset the data, because dropping data by the library     
       for eventsIndex in range (0, lenEvents):
-         
+         print(iters)
+         iters+=1
          events = PageLooping(browser, url)
          
          if IsClickable(browser,events, eventsIndex) == True:
@@ -246,13 +268,13 @@ if __name__ == '__main__':
                   else:
                      logging.error("no competition button found")
                else:
-                  logging.error("no competitors")
+                  logging.warning("no competitors")
             else:
-               logging.error("no eventname")
+               logging.warning("no eventname")
          else:
             logging.error(f"eventIndex: {eventsIndex} is not clickable")
    try:      
-      #ShowAthletes(myAthletesCompetingList)
+      ShowAthletes(myAthletesCompetingList)
       WriteToFile(fileName, myAthletesCompetingList )
       logging.warning("saved, done")
    except:
