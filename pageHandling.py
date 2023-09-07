@@ -49,10 +49,7 @@ def UseFilter(browser, catList):
          except:
             logging.error('Timed out while waiting for page to click on all categories')
             return -1
-<<<<<<< HEAD
-=======
          
->>>>>>> release/v1.0
          try:
             element_present = (EC.visibility_of_element_located((By.TAG_NAME, "li")))
             WebDriverWait(browser, timeout).until(element_present)
@@ -61,17 +58,10 @@ def UseFilter(browser, catList):
             return -1
          
          list = dropDown.find_elements(By.CLASS_NAME, "country_NL")
-<<<<<<< HEAD
-         for l in list:
-            for cat in categoryList:
-               if l.text == cat or \
-                  l.text.partition(" ")[0] == cat:
-=======
          for c in catList:
             for l in list:
                if l.text == c or \
                   l.text.partition(" ")[0] == c:
->>>>>>> release/v1.0
                   try:
                      element_present = (EC.element_to_be_clickable(l))
                      WebDriverWait(browser, timeout).until(element_present)
@@ -79,10 +69,7 @@ def UseFilter(browser, catList):
                   except:
                      logging.error(f'cant click on {l.text}')
                      return -1
-<<<<<<< HEAD
-=======
                   
->>>>>>> release/v1.0
                   break
    #print('successful executed UsePupilFilter')
    logging.debug('successful executed UsePupilFilter')
